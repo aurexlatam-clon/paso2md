@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AUREX Academy — Del Contenido al Zoom</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0A;--gold:#D4A843;--gold-light:#E8C06A;
+    --gold-dim:rgba(212,168,67,0.15);--gold-glow:rgba(212,168,67,0.07);
+    --white:#F5F5F0;--gray:#888880;--text:#D0CFC8;
+    --cyan:#00C9B1;--rose:#FF6B6B;--violet:#9B6DFF;
+    --green:#4CAF82;--orange:#FF8C42;--wa:#25D366;
+    --max:600px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:'Lato',sans-serif;font-size:16px;line-height:1.75;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(212,168,67,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(212,168,67,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  .progress-strip{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-light));z-index:100;box-shadow:0 0 8px rgba(212,168,67,0.6);transition:width 0.1s ease;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+
+  /* HERO */
+  .hero{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:72px 24px 48px;text-align:center;}
+  .module-badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid rgba(212,168,67,0.3);border-radius:100px;padding:6px 16px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:24px;animation:fadeUp 0.8s ease both;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s ease infinite;}
+  .step-indicator{display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;animation:fadeUp 0.8s ease 0.05s both;}
+  .step-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);}
+  .step-dot.done-dot{background:rgba(212,168,67,0.4);}
+  .step-dot.active{background:var(--gold);box-shadow:0 0 8px rgba(212,168,67,0.6);}
+  .hero-title{font-family:'Syne',sans-serif;font-size:clamp(30px,8vw,46px);font-weight:800;line-height:1.05;color:var(--white);margin-bottom:10px;animation:fadeUp 0.8s ease 0.1s both;}
+  .hero-title span{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 60%,#F5D78E 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .hero-sub{font-size:13px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:24px;animation:fadeUp 0.8s ease 0.2s both;}
+  .hero-hook{background:linear-gradient(135deg,rgba(212,168,67,0.1),rgba(212,168,67,0.04));border:1px solid rgba(212,168,67,0.25);border-left:3px solid var(--gold);border-radius:14px;padding:18px 22px;font-size:15px;color:var(--white);text-align:left;line-height:1.7;animation:fadeUp 0.8s ease 0.3s both;}
+  .hero-hook strong{color:var(--gold);}
+
+  /* NAV */
+  .nav-map{position:relative;z-index:1;max-width:var(--max);margin:0 auto 40px;padding:0 20px;}
+  .nav-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:12px;text-align:center;}
+  .nav-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .nav-chip{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:7px 14px;font-size:12px;font-family:'Syne',sans-serif;color:var(--gray);text-decoration:none;transition:all 0.25s ease;}
+  .nav-chip:hover{background:var(--gold-dim);border-color:rgba(212,168,67,0.4);color:var(--gold);transform:translateY(-1px);}
+
+  /* MAIN */
+  .main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 20px 80px;}
+
+  /* BLOQUE HEADER */
+  .bloque{margin-bottom:56px;}
+  .bloque-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.06);}
+  .bloque-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .bloque-title{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--white);line-height:1.2;}
+  .bloque-sub{font-size:11px;color:var(--gray);font-family:'Syne',sans-serif;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+
+  .b1 .bloque-icon{background:rgba(37,211,102,0.12);border:1px solid rgba(37,211,102,0.3);}
+  .b2 .bloque-icon{background:rgba(212,168,67,0.12);border:1px solid rgba(212,168,67,0.3);}
+  .b3 .bloque-icon{background:rgba(0,201,177,0.1);border:1px solid rgba(0,201,177,0.3);}
+  .b4 .bloque-icon{background:rgba(155,109,255,0.1);border:1px solid rgba(155,109,255,0.3);}
+
+  .intro-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:18px 20px;margin-bottom:24px;font-size:14.5px;color:var(--text);line-height:1.8;}
+  .intro-card strong{color:var(--white);}
+  .intro-card em{color:var(--gold);font-style:normal;font-weight:700;}
+
+  /* PASO NUMERADO */
+  .paso-list{display:flex;flex-direction:column;gap:14px;}
+
+  .paso{
+    background:rgba(255,255,255,0.02);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:16px;padding:18px;
+    display:flex;gap:14px;align-items:flex-start;
+    transition:all 0.3s ease;position:relative;overflow:hidden;
+  }
+  .paso::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+  .paso:hover{background:rgba(255,255,255,0.04);transform:translateX(3px);}
+
+  .b1 .paso::before{background:var(--wa);}
+  .b2 .paso::before{background:var(--gold);}
+  .b3 .paso::before{background:var(--cyan);}
+  .b4 .paso::before{background:var(--violet);}
+
+  .paso-num{
+    width:34px;height:34px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Syne',sans-serif;font-size:15px;font-weight:800;
+    flex-shrink:0;
+  }
+  .b1 .paso-num{background:rgba(37,211,102,0.12);color:var(--wa);border:1px solid rgba(37,211,102,0.25);}
+  .b2 .paso-num{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(212,168,67,0.25);}
+  .b3 .paso-num{background:rgba(0,201,177,0.1);color:var(--cyan);border:1px solid rgba(0,201,177,0.2);}
+  .b4 .paso-num{background:rgba(155,109,255,0.1);color:var(--violet);border:1px solid rgba(155,109,255,0.2);}
+
+  .paso-body{flex:1;}
+  .paso-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--white);margin-bottom:6px;}
+  .paso-desc{font-size:14px;color:var(--text);line-height:1.75;}
+  .paso-desc strong{color:var(--white);}
+  .paso-desc em{color:var(--gold);font-style:normal;}
+
+  /* COPY BOX */
+  .copy-box{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;margin-top:12px;}
+  .copy-label{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:8px;}
+  .copy-text{font-size:13px;color:var(--white);line-height:1.75;margin-bottom:12px;}
+  .copy-text em{color:var(--gold);font-style:normal;}
+  .copy-text strong{color:var(--white);}
+  .copy-btn{display:inline-flex;align-items:center;gap:6px;background:var(--gold-dim);border:1px solid rgba(212,168,67,0.3);border-radius:8px;padding:8px 16px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--gold);cursor:pointer;transition:all 0.25s ease;letter-spacing:1px;text-transform:uppercase;}
+  .copy-btn:hover{background:rgba(212,168,67,0.25);transform:translateY(-1px);}
+  .copy-btn.copied{background:rgba(76,175,130,0.15);color:var(--green);border-color:rgba(76,175,130,0.3);}
+
+  /* TIP ESPECIAL */
+  .tip-card{border-radius:14px;padding:16px 18px;margin-top:12px;display:flex;gap:12px;align-items:flex-start;}
+  .tip-card.gold{background:linear-gradient(135deg,rgba(212,168,67,0.1),rgba(212,168,67,0.03));border:1px solid rgba(212,168,67,0.2);}
+  .tip-card.cyan{background:rgba(0,201,177,0.07);border:1px solid rgba(0,201,177,0.2);}
+  .tip-card.violet{background:rgba(155,109,255,0.07);border:1px solid rgba(155,109,255,0.2);}
+  .tip-card.rose{background:rgba(255,107,107,0.06);border:1px solid rgba(255,107,107,0.2);}
+  .tip-icon{font-size:20px;flex-shrink:0;}
+  .tip-body{flex:1;}
+  .tip-label{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+  .tip-card.gold .tip-label{color:var(--gold);}
+  .tip-card.cyan .tip-label{color:var(--cyan);}
+  .tip-card.violet .tip-label{color:var(--violet);}
+  .tip-card.rose .tip-label{color:var(--rose);}
+  .tip-text{font-size:13.5px;color:var(--text);line-height:1.7;}
+  .tip-text strong{color:var(--white);}
+  .tip-text em{font-style:normal;}
+
+  /* REFERENCIA A MÓDULO */
+  .module-ref{
+    background:linear-gradient(135deg,rgba(155,109,255,0.1),rgba(155,109,255,0.03));
+    border:1px solid rgba(155,109,255,0.25);
+    border-radius:14px;padding:16px 20px;margin-top:14px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .module-ref-icon{font-size:24px;flex-shrink:0;}
+  .module-ref-body{flex:1;}
+  .module-ref-label{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--violet);margin-bottom:4px;}
+  .module-ref-text{font-size:13.5px;color:var(--white);font-weight:700;font-family:'Syne',sans-serif;margin-bottom:3px;}
+  .module-ref-sub{font-size:12px;color:var(--gray);}
+
+  /* FLUJO VISUAL */
+  .flujo{display:flex;flex-direction:column;gap:0;margin:20px 0;}
+  .flujo-step{
+    display:flex;align-items:flex-start;gap:14px;
+    padding:14px 0;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+  }
+  .flujo-step:last-child{border-bottom:none;}
+  .flujo-left{display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0;}
+  .flujo-circle{
+    width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-family:'Syne',sans-serif;font-weight:800;
+    flex-shrink:0;
+  }
+  .flujo-line{width:2px;flex:1;min-height:16px;background:rgba(255,255,255,0.06);margin:3px auto;}
+  .flujo-content{flex:1;padding-top:4px;}
+  .flujo-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--white);margin-bottom:4px;}
+  .flujo-desc{font-size:13px;color:var(--text);line-height:1.65;}
+  .flujo-desc strong{color:var(--white);}
+  .flujo-desc em{color:var(--gold);font-style:normal;}
+  .flujo-time{font-size:10px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;color:var(--gray);text-transform:uppercase;margin-bottom:3px;}
+
+  .fc-wa .flujo-circle{background:rgba(37,211,102,0.15);color:var(--wa);border:1px solid rgba(37,211,102,0.3);}
+  .fc-gold .flujo-circle{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(212,168,67,0.3);}
+  .fc-cyan .flujo-circle{background:rgba(0,201,177,0.1);color:var(--cyan);border:1px solid rgba(0,201,177,0.25);}
+  .fc-violet .flujo-circle{background:rgba(155,109,255,0.1);color:var(--violet);border:1px solid rgba(155,109,255,0.25);}
+  .fc-rose .flujo-circle{background:rgba(255,107,107,0.1);color:var(--rose);border:1px solid rgba(255,107,107,0.25);}
+
+  /* RESULTADO ESPERADO */
+  .resultado{
+    background:linear-gradient(135deg,rgba(76,175,130,0.1),rgba(76,175,130,0.03));
+    border:1px solid rgba(76,175,130,0.25);
+    border-radius:16px;padding:20px 22px;margin-top:16px;
+    text-align:center;
+  }
+  .resultado-label{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:8px;}
+  .resultado-text{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--white);line-height:1.4;}
+  .resultado-sub{font-size:13px;color:var(--gray);margin-top:6px;}
+
+  /* DIVIDER */
+  .divider{display:flex;align-items:center;gap:16px;margin:36px 0;}
+  .divider-line{flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(212,168,67,0.2),transparent);}
+  .divider-icon{font-size:16px;}
+
+  /* CTA */
+  .cta-bottom{text-align:center;padding:48px 0 20px;}
+  .cta-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--white);margin-bottom:10px;line-height:1.3;}
+  .cta-title span{background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .cta-sub{font-size:14px;color:var(--gray);margin-bottom:28px;}
+  .cta-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--gold),#C49535);color:#0A0A0A;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:16px 32px;border-radius:100px;cursor:pointer;border:none;box-shadow:0 8px 32px rgba(212,168,67,0.35);transition:all 0.3s ease;text-decoration:none;}
+  .cta-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(212,168,67,0.5);}
+
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+  .particle{position:fixed;width:2px;height:2px;border-radius:50%;background:var(--gold);opacity:0;pointer-events:none;z-index:0;animation:floatP var(--dur,9s) ease-in-out var(--delay,0s) infinite;}
+  @keyframes floatP{0%{opacity:0;transform:translateY(100vh);}10%{opacity:0.4;}90%{opacity:0.1;}100%{opacity:0;transform:translateY(-80px);}}
+</style>
+</head>
+<body>
+<div class="progress-strip" id="progressBar"></div>
+<div class="particle" style="left:10%;--dur:10s;--delay:0s;"></div>
+<div class="particle" style="left:40%;--dur:13s;--delay:2s;"></div>
+<div class="particle" style="left:75%;--dur:9s;--delay:1s;"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="module-badge"><span class="dot"></span> AUREX Academy · Módulo 5 · Paso 2</div>
+  <div class="step-indicator">
+    <div class="step-dot done-dot"></div>
+    <div class="step-dot active"></div>
+    <div class="step-dot"></div>
+    <div class="step-dot"></div>
+  </div>
+  <h1 class="hero-title">Del Contenido<br><span>al Zoom</span></h1>
+  <p class="hero-sub">Publica · Detecta · Convierte</p>
+  <div class="hero-hook">
+    Tu vitrina ya está lista. Ahora viene lo que genera resultados reales:
+    <strong>un sistema diario simple que convierte vistas en conversaciones
+    y conversaciones en Zooms.</strong> Aquí no hay teoría — solo pasos concretos que ejecutas hoy.
+  </div>
+</section>
+
+<!-- NAV -->
+<nav class="nav-map reveal">
+  <div class="nav-label">Ir directo a una sección</div>
+  <div class="nav-grid">
+    <a class="nav-chip" href="#b1">📲 Sistema diario</a>
+    <a class="nav-chip" href="#b2">⏰ Las 3 horas de oro</a>
+    <a class="nav-chip" href="#b3">💬 De la vista al link</a>
+    <a class="nav-chip" href="#b4">🎯 Del link al Zoom</a>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ══════════════════════════════
+     BLOQUE 1 — SISTEMA DIARIO
+══════════════════════════════ -->
+<section class="bloque b1 reveal" id="b1">
+  <div class="bloque-header">
+    <div class="bloque-icon">📲</div>
+    <div>
+      <div class="bloque-title">El Sistema Diario de Publicación</div>
+      <div class="bloque-sub">Bloque 1 · Cómo y qué publicar cada día</div>
+    </div>
+  </div>
+
+  <div class="intro-card">
+    No necesitas crear contenido desde cero. <em>Ya tienes todo listo.</em>
+    El banco de imágenes AUREX y el canal de Telegram son tu fuente diaria.
+    <strong>Tu trabajo es publicar con consistencia y en el orden correcto.</strong>
+  </div>
+
+  <div class="paso-list">
+
+    <div class="paso reveal">
+      <div class="paso-num">1</div>
+      <div class="paso-body">
+        <div class="paso-title">Descarga tus imágenes del día</div>
+        <div class="paso-desc">
+          Cada día tienes <strong>dos fuentes de imágenes:</strong><br><br>
+          📌 <strong>Grupo AUREX:</strong> imágenes que se suben diariamente — descárgalas en cuanto lleguen<br>
+          📌 <strong>Canal de Telegram AUREX:</strong> banco ampliado con más opciones para nutrir tus redes<br><br>
+          Descarga <em>2 a 5 imágenes</em> por día. No más — la consistencia vale más que el volumen.
+        </div>
+        <div class="tip-card gold reveal">
+          <span class="tip-icon">💡</span>
+          <div class="tip-body">
+            <div class="tip-label">Tip de organización</div>
+            <div class="tip-text">Crea una carpeta en tu celular llamada <strong>"AUREX Hoy"</strong>. Cada mañana descarga las imágenes ahí. Así siempre tienes tu contenido listo para publicar en menos de 2 minutos.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso reveal">
+      <div class="paso-num">2</div>
+      <div class="paso-body">
+        <div class="paso-title">Sube las imágenes a WhatsApp en secuencia</div>
+        <div class="paso-desc">
+          WhatsApp es tu canal principal. <strong>Sube las imágenes una por una</strong> — no todas juntas en un solo estado. Cada imagen es una historia separada que genera más vistas.
+        </div>
+        <div class="copy-box">
+          <div class="copy-label">📋 La secuencia correcta</div>
+          <div class="copy-text">
+            <em>Imagen 1:</em> Motivacional o de contexto — abre el apetito<br>
+            <em>Imagen 2:</em> Contenido de valor — dato, tip o resultado<br>
+            <em>Imagen 3:</em> Prueba social o testimonio del equipo<br>
+            <em>Imagen 4 (opcional):</em> Llamada a la acción suave<br><br>
+            <strong>⏰ Mejor horario:</strong> 8-9am · 1-2pm · 7-9pm
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso reveal">
+      <div class="paso-num">3</div>
+      <div class="paso-body">
+        <div class="paso-title">Configura para publicar en los 3 canales a la vez</div>
+        <div class="paso-desc">
+          Lo que subes en WhatsApp puede aparecer <strong>simultáneamente en Facebook e Instagram</strong> con un solo clic. Así cubres los 3 canales sin trabajo extra.
+        </div>
+        <div class="copy-box">
+          <div class="copy-label">⚙️ Cómo configurarlo — paso a paso</div>
+          <div class="copy-text">
+            <strong>Para Facebook:</strong><br>
+            1. Abre WhatsApp → Estado → sube tu imagen<br>
+            2. Antes de publicar toca el ícono de <em>compartir</em> (flecha)<br>
+            3. Selecciona <em>"Compartir en Facebook"</em><br>
+            4. Confirma — aparece en tu Facebook automáticamente<br><br>
+            <strong>Para Instagram:</strong><br>
+            1. Sube la imagen a tus Stories de Instagram por separado<br>
+            2. O usa la app <em>Meta Business Suite</em> para programar en FB e IG al mismo tiempo<br><br>
+            <em>💡 Tip:</em> Una vez que lo hagas 3 veces te tardas menos de 2 minutos en los 3 canales.
+          </div>
+        </div>
+        <div class="tip-card cyan reveal">
+          <span class="tip-icon">📱</span>
+          <div class="tip-body">
+            <div class="tip-label">Instagram Stories</div>
+            <div class="tip-text">En Instagram agrega siempre un <strong>sticker de pregunta o encuesta</strong> en tus Stories — "¿Te gustaría saber más?" o "¿Estás buscando generar ingresos extras?" Esto activa conversaciones sin que tú las inicies.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso reveal">
+      <div class="paso-num">4</div>
+      <div class="paso-body">
+        <div class="paso-title">Facebook: qué hacer además de compartir el estado</div>
+        <div class="paso-desc">
+          Facebook tiene su propio ritmo. <strong>No es solo compartir lo de WhatsApp.</strong>
+          Complementa con esto 3 veces por semana:
+        </div>
+        <div class="copy-box">
+          <div class="copy-label">📋 Acciones semanales en Facebook</div>
+          <div class="copy-text">
+            <em>Lunes:</em> Publica una imagen del banco + texto de 2-3 líneas con tu historia<br>
+            <em>Miércoles:</em> Comparte un resultado real del equipo o un testimonio<br>
+            <em>Viernes:</em> Post de valor — tip sobre ingresos digitales + CTA suave<br><br>
+            <em>💡 En grupos:</em> Únete a 3-5 grupos de emprendimiento o negocios en tu ciudad. Participa con valor — no vendas directo, aporta. Las personas interesadas te buscarán.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="resultado reveal">
+    <div class="resultado-label">✅ Resultado esperado de este bloque</div>
+    <div class="resultado-text">Al terminar el día tienes contenido publicado<br>en los 3 canales en menos de 10 minutos.</div>
+    <div class="resultado-sub">Constancia diaria de 5-7 días genera tus primeras respuestas.</div>
+  </div>
+</section>
+
+<div class="divider reveal"><div class="divider-line"></div><div class="divider-icon">⏰</div><div class="divider-line"></div></div>
+
+<!-- ══════════════════════════════
+     BLOQUE 2 — LAS 3 HORAS DE ORO
+══════════════════════════════ -->
+<section class="bloque b2 reveal" id="b2">
+  <div class="bloque-header">
+    <div class="bloque-icon">⏰</div>
+    <div>
+      <div class="bloque-title">Las 3 Horas de Oro</div>
+      <div class="bloque-sub">Bloque 2 · Detecta quién está interesado</div>
+    </div>
+  </div>
+
+  <div class="intro-card">
+    Después de publicar, <strong>espera 3 horas.</strong>
+    En ese tiempo la gente ve tus estados. Quienes los ven más de una vez,
+    quienes responden o quienes tienen patrones de vista repetida
+    — <em>esos son tus prospectos calientes.</em> No los persigas. Léelos.
+  </div>
+
+  <div class="flujo reveal">
+
+    <div class="flujo-step fc-wa">
+      <div class="flujo-left">
+        <div class="flujo-circle">📲</div>
+        <div class="flujo-line"></div>
+      </div>
+      <div class="flujo-content">
+        <div class="flujo-time">Hora 0 — Al publicar</div>
+        <div class="flujo-title">Sube tus imágenes y cierra el teléfono</div>
+        <div class="flujo-desc">Publica en secuencia y <strong>no te quedes revisando quién las vio.</strong> Deja que el contenido trabaje solo. Espera mínimo 2-3 horas antes de revisar.</div>
+      </div>
+    </div>
+
+    <div class="flujo-step fc-gold">
+      <div class="flujo-left">
+        <div class="flujo-circle">👁️</div>
+        <div class="flujo-line"></div>
+      </div>
+      <div class="flujo-content">
+        <div class="flujo-time">Hora 3 — El momento de revisar</div>
+        <div class="flujo-title">Abre tu estado y revisa la lista de vistas</div>
+        <div class="flujo-desc">
+          Ve a tu estado → toca la imagen → desliza hacia arriba para ver quién la vio.<br><br>
+          <strong>Señales de interés real que debes notar:</strong><br>
+          <em>🔥 Alta prioridad:</em> alguien que vio 2 o más de tus imágenes<br>
+          <em>🔥 Alta prioridad:</em> alguien que normalmente no interactúa contigo<br>
+          <em>🔥 Alta prioridad:</em> alguien que respondió con un emoji o mensaje
+        </div>
+      </div>
+    </div>
+
+    <div class="flujo-step fc-cyan">
+      <div class="flujo-left">
+        <div class="flujo-circle">📋</div>
+        <div class="flujo-line"></div>
+      </div>
+      <div class="flujo-content">
+        <div class="flujo-time">Hora 3 — Inmediatamente después</div>
+        <div class="flujo-title">Haz tu lista de prospectos del día</div>
+        <div class="flujo-desc">Anota en una hoja o en una nota del celular los nombres de las personas con señales de interés. <strong>Esta es tu lista de trabajo para las próximas horas.</strong> No más de 5-10 personas por día para darles atención real.</div>
+      </div>
+    </div>
+
+    <div class="flujo-step fc-violet">
+      <div class="flujo-left">
+        <div class="flujo-circle">💬</div>
+      </div>
+      <div class="flujo-content">
+        <div class="flujo-time">Hora 3-4 — Acción</div>
+        <div class="flujo-title">Saluda. No vendas. Abre conversación.</div>
+        <div class="flujo-desc">Escribe a cada persona de tu lista. <strong>El objetivo es abrir una conversación natural,</strong> no soltar el link del negocio. Ese paso viene después — si hay interés real.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="resultado reveal">
+    <div class="resultado-label">✅ Resultado esperado de este bloque</div>
+    <div class="resultado-text">Al final del día tienes 3-5 conversaciones<br>abiertas con personas que mostraron interés.</div>
+    <div class="resultado-sub">No prospectos forzados — personas que ya vieron tu contenido y levantaron la mano.</div>
+  </div>
+</section>
+
+<div class="divider reveal"><div class="divider-line"></div><div class="divider-icon">💬</div><div class="divider-line"></div></div>
+
+<!-- ══════════════════════════════
+     BLOQUE 3 — DE LA VISTA AL LINK
+══════════════════════════════ -->
+<section class="bloque b3 reveal" id="b3">
+  <div class="bloque-header">
+    <div class="bloque-icon">💬</div>
+    <div>
+      <div class="bloque-title">De la Vista al Link</div>
+      <div class="bloque-sub">Bloque 3 · Convierte la conversación</div>
+    </div>
+  </div>
+
+  <div class="intro-card">
+    Aquí está la diferencia entre quien vende y quien no.
+    <strong>No es el producto. Es cómo abres la conversación.</strong>
+    El link no se manda en el primer mensaje. Se manda cuando hay interés real confirmado.
+  </div>
+
+  <div class="paso-list">
+
+    <div class="paso reveal">
+      <div class="paso-num">1</div>
+      <div class="paso-body">
+        <div class="paso-title">El saludo — Natural, sin agenda visible</div>
+        <div class="paso-desc">El primer mensaje es solo para reconectar. <strong>No menciones el negocio, no mandes el link, no digas "tengo algo para ti."</strong> Solo saluda como lo harías con cualquier conocido.</div>
+        <div class="copy-box">
+          <div class="copy-label">📋 Mensajes de apertura — Copia y adapta</div>
+          <div class="copy-text">
+            <em>Para alguien que vio tus estados:</em><br>
+            "Hola [nombre]! ¿Cómo estás? Tiempo sin saber de ti 😊"<br><br>
+            <em>Para alguien que respondió con emoji:</em><br>
+            "Hola! Vi que te llamó la atención lo que compartí 👀 ¿Todo bien por allá?"<br><br>
+            <em>Para alguien que no interactúa seguido:</em><br>
+            "Hey [nombre]! ¿Cómo van las cosas? ¿Qué hay de nuevo contigo?"
+          </div>
+          <button class="copy-btn" onclick="copyText(this,'Hola [nombre]! ¿Cómo estás? Tiempo sin saber de ti 😊')">📋 Copiar mensaje 1</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso reveal">
+      <div class="paso-num">2</div>
+      <div class="paso-body">
+        <div class="paso-title">Detecta el interés — Escucha antes de hablar</div>
+        <div class="paso-desc">
+          Después del saludo viene una breve conversación. <strong>Tu trabajo aquí es escuchar y hacer una sola pregunta clave</strong> para detectar si hay terreno fértil.
+        </div>
+        <div class="copy-box">
+          <div class="copy-label">📋 La pregunta que abre todo</div>
+          <div class="copy-text">
+            <em>Después de 1-2 mensajes de conversación natural:</em><br><br>
+            "Oye, te pregunto porque últimamente me has estado viendo mis estados 😄 — ¿Estás en algún proyecto o buscando alguna opción extra de ingreso?"<br><br>
+            <em>Versión más directa:</em><br>
+            "¿Tú actualmente estás abierto/a a revisar alguna oportunidad de negocio digital o estás bien con lo que tienes?"<br><br>
+            <em>Si dice SÍ o muestra curiosidad:</em> pasas al Paso 3.<br>
+            <em>Si dice NO:</em> respetas, sigues siendo amable y lo dejas en la lista para más adelante.
+          </div>
+          <button class="copy-btn" onclick="copyText(this,'Oye, te pregunto porque últimamente me has estado viendo mis estados 😄 — ¿Estás en algún proyecto o buscando alguna opción extra de ingreso?')">📋 Copiar pregunta clave</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso reveal">
+      <div class="paso-num">3</div>
+      <div class="paso-body">
+        <div class="paso-title">Manda el link — En el momento correcto</div>
+        <div class="paso-desc">
+          Solo cuando hay interés confirmado. <strong>No antes.</strong> El link va acompañado de un mensaje corto que prepara al prospecto para lo que va a ver.
+        </div>
+        <div class="copy-box">
+          <div class="copy-label">📋 Mensaje para enviar el link del embudo</div>
+          <div class="copy-text">
+            <em>Versión corta:</em><br>
+            "Perfecto. Mira, te comparto la información para que la revises con calma. Es breve y está todo explicado. Dime qué te parece 👇<br>
+            [link del embudo]"<br><br>
+            <em>Versión con contexto:</em><br>
+            "Genial. Lo que hago es parte de una comunidad digital llamada AUREX. Te paso el link para que veas de qué trata — tiene video y todo explicado. Lo revisas y me dices 😊<br>
+            [link del embudo]"
+          </div>
+          <button class="copy-btn" onclick="copyText(this,'Perfecto. Mira, te comparto la información para que la revises con calma. Es breve y está todo explicado. Dime qué te parece 👇\n[link del embudo]')">📋 Copiar mensaje</button>
+        </div>
+
+        <!-- REFERENCIA AL MÓDULO DE PROSPECCIÓN -->
+        <div class="module-ref reveal">
+          <span class="module-ref-icon">📚</span>
+          <div class="module-ref-body">
+            <div class="module-ref-label">Ir más profundo</div>
+            <div class="module-ref-text">Módulo de Prospección y Networking</div>
+            <div class="module-ref-sub">Ahí encontrarás guiones completos, manejo de respuestas, cómo calificar prospectos y técnicas avanzadas de conversación para cada situación.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider reveal"><div class="divider-line"></div><div class="divider-icon">🎯</div><div class="divider-line"></div></div>
+
+<!-- ══════════════════════════════
+     BLOQUE 4 — DEL LINK AL ZOOM
+══════════════════════════════ -->
+<section class="bloque b4 reveal" id="b4">
+  <div class="bloque-header">
+    <div class="bloque-icon">🎯</div>
+    <div>
+      <div class="bloque-title">Del Link al Zoom</div>
+      <div class="bloque-sub">Bloque 4 · Cierra la cita</div>
+    </div>
+  </div>
+
+  <div class="intro-card">
+    El embudo hace el trabajo de explicar. <strong>Tu trabajo es dar el siguiente paso:</strong>
+    invitar al Zoom. No preguntes si les gustó durante horas — da seguimiento
+    en el momento correcto y propón la cita de forma natural.
+  </div>
+
+  <div class="paso-list">
+
+    <div class="paso reveal">
+      <div class="paso-num">1</div>
+      <div class="paso-body">
+        <div class="paso-title">Espera — pero no demasiado</div>
+        <div class="paso-desc">
+          Después de mandar el link, <strong>da entre 1 y 3 horas</strong> para que lo revisen.
+          Si en ese tiempo no hay respuesta, haz seguimiento ese mismo día.
+          No esperes al día siguiente — el interés se enfría rápido.
+        </div>
+        <div class="tip-card rose reveal">
+          <span class="tip-icon">⚠️</span>
+          <div class="tip-body">
+            <div class="tip-label">Error que debes evitar</div>
+            <div class="tip-text">No mandes el link y desaparezcas. <strong>El seguimiento es donde se gana o se pierde el prospecto.</strong> El embudo informa — tú conectas y cierras.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso reveal">
+      <div class="paso-num">2</div>
+      <div class="paso-body">
+        <div class="paso-title">El mensaje de seguimiento</div>
+        <div class="paso-desc">Simple, sin presión. El objetivo es saber si lo vieron y abrir la puerta al Zoom.</div>
+        <div class="copy-box">
+          <div class="copy-label">📋 Mensajes de seguimiento — Copia y adapta</div>
+          <div class="copy-text">
+            <em>Si no hay respuesta después de 2-3 horas:</em><br>
+            "Hola [nombre]! ¿Pudiste darle una revisada a la info? 😊"<br><br>
+            <em>Si respondieron positivamente:</em><br>
+            "Me alegra que te haya llamado la atención. Lo que sigue es una llamada corta de 20-30 minutos para que te explique cómo funciona en detalle y resuelva tus dudas. ¿Tienes tiempo esta semana?"<br><br>
+            <em>Si tienen dudas o preguntas:</em><br>
+            "Con gusto te explico todo en una llamada — es más fácil así que por texto. ¿Qué día te queda bien?"
+          </div>
+          <button class="copy-btn" onclick="copyText(this,'Hola [nombre]! ¿Pudiste darle una revisada a la info? 😊')">📋 Copiar seguimiento</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso reveal">
+      <div class="paso-num">3</div>
+      <div class="paso-body">
+        <div class="paso-title">Propón el Zoom — Directo y sin rodeos</div>
+        <div class="paso-desc">
+          Cuando hay interés confirmado, <strong>propón el Zoom de forma directa.</strong>
+          No le preguntes si quiere — dale opciones de horario.
+          Quien pregunta "¿quieres?" da espacio a que digan no.
+          Quien dice "¿cuándo?" asume el sí.
+        </div>
+        <div class="copy-box">
+          <div class="copy-label">📋 Cómo proponer el Zoom</div>
+          <div class="copy-text">
+            <em>Versión con opciones:</em><br>
+            "Perfecto [nombre]. Hagamos una videollamada de 20 minutos para explicarte todo en detalle. ¿Te funciona mañana a las 7pm o el [día] a las [hora]?"<br><br>
+            <em>Versión más directa:</em><br>
+            "Bien, lo que sigue es que te conectes a nuestro Zoom informativo. Son 30 minutos y sales con todo claro. ¿Cuándo tienes un espacio esta semana?"<br><br>
+            <em>Versión suave:</em><br>
+            "¿Qué te parece si agendamos una llamada rápida? Así te explico todo en vivo y resuelvo tus dudas al momento 😊"
+          </div>
+          <button class="copy-btn" onclick="copyText(this,'Perfecto [nombre]. Hagamos una videollamada de 20 minutos para explicarte todo en detalle. ¿Te funciona mañana a las 7pm o el [día] a las [hora]?')">📋 Copiar propuesta Zoom</button>
+        </div>
+
+        <div class="module-ref reveal">
+          <span class="module-ref-icon">📚</span>
+          <div class="module-ref-body">
+            <div class="module-ref-label">Ir más profundo</div>
+            <div class="module-ref-text">Módulo de Seguimiento Post-Zoom y Cierres</div>
+            <div class="module-ref-sub">Una vez agendado el Zoom, ahí encontrarás el sistema completo de seguimiento de 7 días, manejo de objeciones y cierre paso a paso.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RESUMEN DEL FLUJO COMPLETO -->
+  <div class="tip-card gold reveal" style="margin-top:28px;">
+    <span class="tip-icon">🔄</span>
+    <div class="tip-body">
+      <div class="tip-label">El ciclo completo en un vistazo</div>
+      <div class="tip-text">
+        <strong>Publica</strong> imágenes del banco →
+        <strong>Espera</strong> 3 horas →
+        <strong>Revisa</strong> quién vio →
+        <strong>Saluda</strong> de forma natural →
+        <strong>Detecta</strong> interés con una pregunta →
+        <strong>Manda</strong> el link del embudo →
+        <strong>Da seguimiento</strong> en 2-3 horas →
+        <strong>Propón</strong> el Zoom →
+        <strong>Repite</strong> mañana.
+      </div>
+    </div>
+  </div>
+
+  <div class="resultado reveal">
+    <div class="resultado-label">🎯 Meta semanal realista</div>
+    <div class="resultado-text">5 días de sistema = 2 a 4 Zooms agendados.</div>
+    <div class="resultado-sub">Sin perseguir a nadie. Sin prospectar en frío. Con personas que ya vieron tu contenido.</div>
+  </div>
+
+</section>
+
+<!-- CTA -->
+<div class="cta-bottom reveal">
+  <div class="cta-title">Ya tienes el sistema.<br><span>Ahora ejecuta.</span></div>
+  <div class="cta-sub">Siguiente: el plan de acción de los primeros 30 días.</div>
+  <a class="cta-btn" href="aurex-plan30dias.html">Plan de 30 Días →</a>
+</div>
+
+</main>
+
+<script>
+  window.addEventListener('scroll',()=>{
+    const pct=(window.scrollY/(document.documentElement.scrollHeight-window.innerHeight))*100;
+    document.getElementById('progressBar').style.width=pct+'%';
+  });
+  const reveals=document.querySelectorAll('.reveal');
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*60);obs.unobserve(e.target);}});
+  },{threshold:0.08});
+  reveals.forEach(el=>obs.observe(el));
+
+  function copyText(btn,text){
+    const fb=()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);};
+    navigator.clipboard?navigator.clipboard.writeText(text).catch(fb):fb();
+    const orig=btn.innerHTML;btn.innerHTML='✅ Copiado';btn.classList.add('copied');
+    setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('copied');},2000);
+  }
+</script>
+</body>
+</html>
